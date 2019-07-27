@@ -3,14 +3,19 @@ package com.android.flightapp.View;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 
 import com.android.flightapp.Model.Airport;
+import com.android.flightapp.Model.AirportAdapter;
 import com.android.flightapp.Model.AirportResourceModel;
 import com.android.flightapp.Model.Airports;
 import com.android.flightapp.Model.Coordinate;
 import com.android.flightapp.Model.MyServiceHolder;
 import com.android.flightapp.Presenter.OkHttpClientInstance;
+import com.android.flightapp.Presenter.OnItemClickListener;
 import com.android.flightapp.Presenter.api_service;
 import com.android.flightapp.R;
 
@@ -23,13 +28,22 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AirportActivity extends AppCompatActivity {
+public class AirportActivity extends AppCompatActivity implements OnItemClickListener {
 
     List<Airport> airPortList = new ArrayList();
+    RecyclerView recyclerView;
+    AirportAdapter airportAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_airport);
+
+        recyclerView = (RecyclerView) findViewById(R.id.airport_recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        airportAdapter = new AirportAdapter();
+        airportAdapter.setClickListener(this);
+
         MyServiceHolder myServiceHolder = new MyServiceHolder();
         SharedPreferences settings = getSharedPreferences("PREFS", this.MODE_PRIVATE);
         String token = settings.getString("token", null);
@@ -57,6 +71,9 @@ public class AirportActivity extends AppCompatActivity {
                         Log.d("Airports", "Them airports have been gotten " + response.body());
                         Airports airports = response.body().getAirportResource().getAirports() ;
                         airPortList = airports.getAirPortLists();
+
+                        airportAdapter.setAirportList(airPortList);
+                        recyclerView.setAdapter(airportAdapter);
                         Log.d("Size","This is the size of the airport list " + airPortList.size());
                         Airport airPort = airPortList.get(1);
                         String code = airPort.getAirportCode();
@@ -76,5 +93,13 @@ public class AirportActivity extends AppCompatActivity {
                 }
         );
 
+    }
+
+    @Override
+    public void onClick(View view, int position)
+    {
+        Airport airport = airPortList.get(position);
+        String airportCode = airport.getAirportCode();
+        Log.d("AirportCode","This is the airport code of the clicked item " + airportCode);
     }
 }
