@@ -36,7 +36,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
     List<Airport> airPortList = new ArrayList();
     RecyclerView recyclerView;
     AirportAdapter airportAdapter;
-    List<String> flightSceduleCode = new ArrayList();
+    List<Airport> flightSceduleCode = new ArrayList();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +73,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
                     public void onResponse(Call<AirportResourceModel> call, Response<AirportResourceModel> response)
                     {
                         Log.d("Airports", "Them airports have been gotten " + response.body());
-                        Airports airports = response.body().getAirportResource().getAirports() ;
+                        Airports airports = response.body().getAirportResource().getAirports();
                         airPortList = airports.getAirPortLists();
 
                         airportAdapter.setAirportList(airPortList);
@@ -106,7 +106,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         String airportCode = airport.getAirportCode();
         Log.d("AirportCode","This is the airport code of the clicked item " + airportCode);
 
-        flightSceduleCode.add(airportCode);
+        flightSceduleCode.add(airport);
         if(flightSceduleCode.size() == 2)
         {
           Intent intent = new Intent(AirportActivity.this, FlightScheduleActivity.class);

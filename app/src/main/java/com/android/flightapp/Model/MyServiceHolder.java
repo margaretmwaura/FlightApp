@@ -1,6 +1,9 @@
 package com.android.flightapp.Model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.android.flightapp.Presenter.api_service;
 
 import androidx.annotation.Nullable;

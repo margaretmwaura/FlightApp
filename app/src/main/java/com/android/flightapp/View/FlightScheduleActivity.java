@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.flightapp.Model.Airport;
+import com.android.flightapp.Model.Coordinate;
+import com.android.flightapp.Model.CoordinateItems;
 import com.android.flightapp.Model.Flight;
 import com.android.flightapp.Model.MyServiceHolder;
 
@@ -27,8 +30,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FlightScheduleActivity extends AppCompatActivity {
 
-    String firstAirportCode;
-    String secondAirportCode;
+    Airport firstAirportCode;
+    Airport secondAirportCode;
+    Coordinate coordinateOne;
+    CoordinateItems coordinateItemsOne;
+    Coordinate coordinateTwo;
+    CoordinateItems coordinateItemsTwo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,12 +46,16 @@ public class FlightScheduleActivity extends AppCompatActivity {
         System.out.println(dateFormat.format(date));
 
         Log.d("Date","String date " + String.valueOf(dateFormat.format(date)));
-        Intent intent = getIntent();
-        firstAirportCode = intent.getStringExtra("FirstAirportCode");
-        Log.d("AirportCode","This is the starting airport code "+ firstAirportCode);
-        secondAirportCode = intent.getStringExtra("SecondAirportCode");
-        Log.d("SecondAirportCode","This is the second airport code " + secondAirportCode);
+        final Intent intent = getIntent();
+        firstAirportCode =intent.getParcelableExtra("FirstAirportCode");
+        Log.d("AirportCode","This is the starting airport code "+ firstAirportCode.getAirportCode());
+        secondAirportCode = intent.getParcelableExtra("SecondAirportCode");
+        Log.d("SecondAirportCode","This is the second airport code " + secondAirportCode.getAirportCode());
 
+        coordinateOne = firstAirportCode.getPosition();
+        coordinateTwo = secondAirportCode.getPosition();
+        coordinateItemsOne = coordinateOne.getCoordinateItems();
+        coordinateItemsTwo = coordinateTwo.getCoordinateItems();
         MyServiceHolder myServiceHolder = new MyServiceHolder();
         SharedPreferences settings = getSharedPreferences("PREFS", this.MODE_PRIVATE);
         String token = settings.getString("token", null);
@@ -62,7 +73,7 @@ public class FlightScheduleActivity extends AppCompatActivity {
                 .client(okHttpClient)
                 .build()
                 .create(api_service.class);
-        Call <ScheduleResource>call = myService.flightSchedules(firstAirportCode,secondAirportCode,String.valueOf(dateFormat.format(date)));
+        Call <ScheduleResource>call = myService.flightSchedules(firstAirportCode.getAirportCode(),secondAirportCode.getAirportCode(),String.valueOf(dateFormat.format(date)));
         call.enqueue(new Callback<ScheduleResource>() {
             @Override
             public void onResponse(Call<ScheduleResource> call, Response<ScheduleResource> response)
@@ -76,6 +87,8 @@ public class FlightScheduleActivity extends AppCompatActivity {
 //                Log.d("OperstionGotten","This is the operation " + String.valueOf(operation));
 
                 Intent intent1 = new Intent(FlightScheduleActivity.this,MapsActivity.class);
+                intent1.putExtra("FirstAirport",firstAirportCode.getPosition().getCoordinateItems());
+                intent1.putExtra("SecondAirport",secondAirportCode.getPosition().getCoordinateItems());
                 startActivity(intent1);
             }
 
@@ -83,6 +96,10 @@ public class FlightScheduleActivity extends AppCompatActivity {
             public void onFailure(Call<ScheduleResource> call, Throwable t)
             {
                Log.d("FlightSchedule","I got nothing people" + t.getMessage());
+                Intent intent1 = new Intent(FlightScheduleActivity.this,MapsActivity.class);
+                intent1.putExtra("FirstAirport", coordinateItemsOne);
+                intent1.putExtra("SecondAirport",coordinateItemsTwo);
+                startActivity(intent1);
             }
         });
 
