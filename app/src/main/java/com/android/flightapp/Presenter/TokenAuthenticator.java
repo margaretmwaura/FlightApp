@@ -36,9 +36,6 @@ public class TokenAuthenticator implements Authenticator
 
         Log.d("Authenticator","Starting authenticator");
 
-
-        if(flag == 1)
-        {
             api_service myService = new retrofit2.Retrofit.Builder()
                     .baseUrl("https://api.lufthansa.com/")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -57,17 +54,12 @@ public class TokenAuthenticator implements Authenticator
                 edit.putString("token", myResponse.getAccessToken());
                 edit.apply();
 
-                flag = 0;
-
                 Log.d("AccessToken", "End of getting the access token");
                 return response.request().newBuilder()
                         .header("Authorization","Bearer "+accessToken)
                         .build();
             }
 
-        }
-        else
-        {
             Log.d("AuthenticationToken","Authentication token had alrady been set");
             SharedPreferences settings = context.getSharedPreferences("PREFS", context.MODE_PRIVATE);
 
@@ -76,10 +68,10 @@ public class TokenAuthenticator implements Authenticator
             return response.request().newBuilder()
                     .header("Authorization", "Bearer "+token)
                     .build();
-        }
-        Log.d("Authenticator","Havent called the token again");
 
-        return null;
+
+
+
 
     }
 }

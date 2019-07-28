@@ -1,5 +1,6 @@
 package com.android.flightapp.View;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
     List<Airport> airPortList = new ArrayList();
     RecyclerView recyclerView;
     AirportAdapter airportAdapter;
+    List<String> flightSceduleCode = new ArrayList();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +58,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         Log.d("MainActivity","MainActivy we are back");
 
         api_service myService = new retrofit2.Retrofit.Builder()
-                .baseUrl("https://api.lufthansa.com/v1/")
+                .baseUrl("https://api.lufthansa.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build()
@@ -101,5 +103,14 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         Airport airport = airPortList.get(position);
         String airportCode = airport.getAirportCode();
         Log.d("AirportCode","This is the airport code of the clicked item " + airportCode);
+
+        flightSceduleCode.add(airportCode);
+        if(flightSceduleCode.size() == 2)
+        {
+          Intent intent = new Intent(AirportActivity.this, FlightScheduleActivity.class);
+          intent.putExtra("FirstAirportCode",flightSceduleCode.get(0));
+          intent.putExtra("SecondAirportCode", flightSceduleCode.get(1));
+          startActivity(intent);
+        }
     }
 }
