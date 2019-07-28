@@ -2,7 +2,7 @@ package com.android.flightapp.View;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 
@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import androidx.appcompat.app.AppCompatActivity;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,13 +67,16 @@ public class FlightScheduleActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ScheduleResource> call, Response<ScheduleResource> response)
             {
-                Log.d("FlightSchedule","Gotten the scheduling data ");
-                int size = response.body().getSchedules().getFlights().size();
-                Log.d("SizeSchedule","This is the size of the schedule : " + String.valueOf(size));
-               Flight flight = response.body().getSchedules().getFlights().get(2).getFlights().get(1);
-                int operation = flight.getMarketCourier().getFlightNumber();
+//                Log.d("FlightSchedule","Gotten the scheduling data ");
+//                int size = response.body().getSchedules().getFlights().size();
+//                Log.d("SizeSchedule","This is the size of the schedule : " + String.valueOf(size));
+//               Flight flight = response.body().getSchedules().getFlights().get(2).getFlights().get(1);
+//                int operation = flight.getMarketCourier().getFlightNumber();
+//
+//                Log.d("OperstionGotten","This is the operation " + String.valueOf(operation));
 
-                Log.d("OperstionGotten","This is the operation " + String.valueOf(operation));
+                Intent intent1 = new Intent(FlightScheduleActivity.this,MapsActivity.class);
+                startActivity(intent1);
             }
 
             @Override

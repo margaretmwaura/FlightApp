@@ -1,8 +1,9 @@
 package com.android.flightapp.Model;
 
-import android.support.annotation.Nullable;
 
 import com.android.flightapp.Presenter.api_service;
+
+import androidx.annotation.Nullable;
 
 public class MyServiceHolder
 {
