@@ -10,11 +10,14 @@ import android.widget.TextView;
 
 import com.android.flightapp.Presenter.OnItemClickListener;
 import com.android.flightapp.R;
+import com.google.android.gms.common.util.Base64Utils;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.AirportViewHolder>
 {
@@ -60,14 +63,14 @@ public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.AirportV
 
     class AirportViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        private TextView airportCode,cityCode,countryCode;
+        @BindView(R.id.airport_code)TextView airportCode;
+        @BindView(R.id.citycode)TextView cityCode;
+        @BindView(R.id.countrycode)TextView countryCode;
         public AirportViewHolder(View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
-            airportCode = itemView.findViewById(R.id.airport_code);
-            cityCode = itemView.findViewById(R.id.citycode);
-            countryCode = itemView.findViewById(R.id.countrycode);
+            ButterKnife.bind(this,itemView);
 
         }
 

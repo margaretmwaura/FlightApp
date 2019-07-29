@@ -14,6 +14,8 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class FlightAdapter extends  RecyclerView.Adapter<FlightAdapter.FlightViewHolder>
 {
@@ -61,14 +63,14 @@ public class FlightAdapter extends  RecyclerView.Adapter<FlightAdapter.FlightVie
 
     class FlightViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        private TextView airplaneCode , airplaneId , flightNumber ;
+        @BindView(R.id.airplancecode)TextView airplaneCode;
+        @BindView(R.id.airplaneid)TextView airplaneId;
+        @BindView(R.id.flightnumber)TextView flightNumber ;
         public FlightViewHolder(View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
-            airplaneCode = itemView.findViewById(R.id.airplancecode);
-            airplaneId = itemView.findViewById(R.id.airplaneid);
-            flightNumber = itemView.findViewById(R.id.flightnumber);
+            ButterKnife.bind(this,itemView);
 
         }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.android.flightapp.BuildConfig;
 import com.android.flightapp.Model.Airport;
 import com.android.flightapp.Model.AirportAdapter;
 import com.android.flightapp.Model.Coordinate;
@@ -31,11 +32,14 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 public class FlightScheduleActivity extends AppCompatActivity implements OnItemClickListener {
 
@@ -45,15 +49,17 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
     CoordinateItems coordinateItemsOne;
     Coordinate coordinateTwo;
     CoordinateItems coordinateItemsTwo;
-    RecyclerView recyclerView;
     List<Flight> flightList = new ArrayList<>();
     List<Flights> flightsList = new ArrayList<>();
     FlightAdapter flightAdapter;
+
+    @BindView(R.id.flight_recyclerView) RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flight_schedule);
 
+        ButterKnife.bind(this);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         System.out.println(dateFormat.format(date));
@@ -64,12 +70,11 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
         flightAdapter = new FlightAdapter();
         flightAdapter.setClickListener(this);
 
-        Log.d("Date","String date " + String.valueOf(dateFormat.format(date)));
         final Intent intent = getIntent();
         firstAirportCode =intent.getParcelableExtra("FirstAirportCode");
-        Log.d("AirportCode","This is the starting airport code "+ firstAirportCode.getAirportCode());
+
         secondAirportCode = intent.getParcelableExtra("SecondAirportCode");
-        Log.d("SecondAirportCode","This is the second airport code " + secondAirportCode.getAirportCode());
+
 
         coordinateOne = firstAirportCode.getPosition();
         coordinateTwo = secondAirportCode.getPosition();
@@ -84,7 +89,7 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
 //                .addHeader("X-Originating-IP", "102.167.112.54")
                 .build();
 
-        Log.d("MainActivity","MainActivy we are back");
+
 
         api_service myService = new retrofit2.Retrofit.Builder()
                 .baseUrl("https://api.lufthansa.com/")
@@ -100,7 +105,7 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
 
                 if(response != null)
                 {
-                    Log.d("FlightSchedule", "Gotten the scheduling data ");
+                    Timber.d( "Gotten the scheduling data ");
 
                     flightsList = response.body().getSchedules().getFlights();
                     int size = response.body().getSchedules().getFlights().size();
@@ -126,7 +131,7 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
             @Override
             public void onFailure(Call<ScheduleResource> call, Throwable t)
             {
-               Log.d("FlightSchedule","I got nothing people" + t.getMessage());
+               Timber.d("I got nothing people" + t.getMessage());
                 Intent intent1 = new Intent(FlightScheduleActivity.this,NoSchedulesGotten.class);
                 startActivity(intent1);
             }

@@ -25,16 +25,19 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 public class AirportActivity extends AppCompatActivity implements OnItemClickListener {
 
     List<Airport> airPortList = new ArrayList();
-    RecyclerView recyclerView;
+    @BindView(R.id.airport_recyclerView)RecyclerView recyclerView;
     AirportAdapter airportAdapter;
     List<Airport> flightSceduleCode = new ArrayList();
     @Override
@@ -42,7 +45,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_airport);
 
-        recyclerView = (RecyclerView) findViewById(R.id.airport_recyclerView);
+        ButterKnife.bind(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
         airportAdapter = new AirportAdapter();
@@ -57,7 +60,6 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
 //                .addHeader("X-Originating-IP", "102.167.112.54")
                 .build();
 
-        Log.d("MainActivity","MainActivy we are back");
 
         api_service myService = new retrofit2.Retrofit.Builder()
                 .baseUrl("https://api.lufthansa.com/")
@@ -72,27 +74,27 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
                     @Override
                     public void onResponse(Call<AirportResourceModel> call, Response<AirportResourceModel> response)
                     {
-                        Log.d("Airports", "Them airports have been gotten " + response.body());
+
                         Airports airports = response.body().getAirportResource().getAirports();
                         airPortList = airports.getAirPortLists();
 
                         airportAdapter.setAirportList(airPortList);
                         recyclerView.setAdapter(airportAdapter);
-                        Log.d("Size","This is the size of the airport list " + airPortList.size());
+                        Timber.d("This is the size of the airport list " + airPortList.size());
                         Airport airPort = airPortList.get(1);
                         String code = airPort.getAirportCode();
-                        Log.d("Code","This is the airport code " + code);
+
 
                         Coordinate coordinate = airPort.getPosition();
                         float longitutde = coordinate.getCoordinateItems().getLatitude();
-                        Log.d("Voila","Here is the longitude " + String.valueOf(longitutde));
+
 
                     }
 
                     @Override
                     public void onFailure(Call<AirportResourceModel> call, Throwable t)
                     {
-                        Log.d("Airports", "Nothing gotten" + t.getMessage());
+                        Timber.d( "Nothing gotten" + t.getMessage());
                     }
                 }
         );
@@ -104,7 +106,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
     {
         Airport airport = airPortList.get(position);
         String airportCode = airport.getAirportCode();
-        Log.d("AirportCode","This is the airport code of the clicked item " + airportCode);
+        Timber.d("This is the airport code of the clicked item " + airportCode);
 
         flightSceduleCode.add(airport);
         if(flightSceduleCode.size() == 2)

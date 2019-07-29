@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import timber.log.Timber;
 
 public class OkHttpClientInstance
 {
@@ -21,7 +22,7 @@ public class OkHttpClientInstance
         {
             this.context = context;
             this.myServiceHolder = myServiceHolder;
-            Log.d("OkhhtpClient","The Okhttpclient has been started");
+            Timber.d("The Okhttpclient has been started");
         }
 
         public Builder addHeader(String key, String value)

@@ -1,6 +1,9 @@
 package com.android.flightapp.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import android.content.Intent;
 import android.os.Build;
@@ -14,11 +17,13 @@ import com.android.flightapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    @BindView(R.id.button)Button next;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
@@ -32,15 +37,13 @@ public class MainActivity extends AppCompatActivity {
             window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         }
-        Button next = (Button)findViewById(R.id.button);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Intent intent = new Intent(MainActivity.this,AirportActivity.class);
-                startActivity(intent);
-            }
-        });
+    }
 
+    @OnClick(R.id.button)
+    public void openAirport()
+    {
+        Intent intent = new Intent(MainActivity.this,AirportActivity.class);
+        startActivity(intent);
     }
 }
