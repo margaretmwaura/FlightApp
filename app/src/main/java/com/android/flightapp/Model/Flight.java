@@ -10,13 +10,18 @@ public class Flight implements Parcelable
     @SerializedName("MarketingCarrier")
     MarketCourier marketCourier;
 
-    public Flight(MarketCourier marketCourier) {
+
+    public Flight(MarketCourier marketCourier )
+    {
         this.marketCourier = marketCourier;
+
     }
+
 
     protected Flight(Parcel in)
     {
         marketCourier = in.readParcelable(MarketCourier.class.getClassLoader());
+
     }
 
     public static final Creator<Flight> CREATOR = new Creator<Flight>() {
@@ -39,14 +44,16 @@ public class Flight implements Parcelable
         this.marketCourier = marketCourier;
     }
 
+
+
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeParcelable(marketCourier,flags);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(marketCourier, flags);
+
     }
 }

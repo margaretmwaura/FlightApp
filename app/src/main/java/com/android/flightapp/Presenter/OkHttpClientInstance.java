@@ -38,33 +38,6 @@ public class OkHttpClientInstance
                     .connectTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS);
-//                    .addInterceptor(
-//                            new Interceptor() {
-//                                @Override
-//                                public Response intercept(Interceptor.Chain chain) throws IOException
-//                                {
-//                                    // Add default headers
-//                                    Request.Builder requestBuilder = chain.request().newBuilder();
-//
-//                                    Log.d("OkhhtPClientInstance","we are in the client now");
-//                                        SharedPreferences settings = context.getSharedPreferences("PREFS", context.MODE_PRIVATE);
-//                                        String token = settings.getString("token", null);
-//
-//                                        if (token != null)
-//                                        {
-//                                            requestBuilder.addHeader("Authorization","Bearer"+token);
-//                                            Log.d("TokenSaving","Token had been saved");
-//                                        }
-//                                        else
-//                                        {
-//                                            Log.d("TokenSaving","Token was never saved ");
-//                                        }
-//
-//
-//                                    return chain.proceed(requestBuilder.build());
-//                                }
-//                            }
-//                    );
 
 
             okHttpClientBuilder.authenticator(authenticator);

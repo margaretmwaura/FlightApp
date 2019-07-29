@@ -4,4 +4,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
+    <string name="button">Get started</string>
+    <string name="descritpion">You will be in a position to   select the starting and   destination airport then book a flight</string>
+    <string name="description_no_schedules">There are no schedules gotten for that leave and destination airport choose another set of airports</string>
 </resources>

@@ -37,8 +37,9 @@ public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.AirportV
     public void onBindViewHolder(@NonNull AirportViewHolder holder, int position)
     {
         Airport airport = airportList.get(position);
-        holder.name.setText(airport.airportCode);
-
+        holder.airportCode.setText(airport.getAirportCode());
+        holder.cityCode.setText(airport.getCityCode());
+        holder.countryCode.setText(airport.getCountryCode());
     }
 
     @Override
@@ -59,12 +60,14 @@ public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.AirportV
 
     class AirportViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        private TextView name;
+        private TextView airportCode,cityCode,countryCode;
         public AirportViewHolder(View itemView)
         {
             super(itemView);
             itemView.setOnClickListener(this);
-            name = itemView.findViewById(R.id.city_view);
+            airportCode = itemView.findViewById(R.id.airport_code);
+            cityCode = itemView.findViewById(R.id.citycode);
+            countryCode = itemView.findViewById(R.id.countrycode);
 
         }
 
