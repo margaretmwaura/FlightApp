@@ -71,14 +71,7 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
         setContentView(R.layout.activity_flight_schedule);
 
         ButterKnife.bind(this);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        System.out.println(dateFormat.format(date));
-
-        idlingResource.increment();
-
-
-        recyclerView = (RecyclerView) findViewById(R.id.flight_recyclerView);
+                recyclerView = (RecyclerView) findViewById(R.id.flight_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
         flightAdapter = new FlightAdapter();
@@ -89,6 +82,36 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
 
         secondAirportCode = intent.getStringExtra("SecondAirportCode");
 
+        getFlightScheduleData();
+
+
+    }
+
+    @Override
+    public void onClick(View view, int position)
+    {
+        SharedPreferences sharedPreferences = getSharedPreferences("PREF", Context.MODE_PRIVATE);
+        Float firstLongitude = sharedPreferences.getFloat("FirstAiportLongitude",0);
+        Float firstLatitude = sharedPreferences.getFloat("FirstAirportLatitude",0);
+        Float SecondLongitude = sharedPreferences.getFloat("SecondAiportLongitude",0);
+        Float SecondLatitude = sharedPreferences.getFloat("SecondAirportLatitude",0);
+
+
+        Intent intent1 = new Intent(FlightScheduleActivity.this, MapsActivity.class);
+        intent1.putExtra("FirstAirportLongitude", firstLongitude);
+        intent1.putExtra("FirstAirportLatitude", firstLatitude);
+        intent1.putExtra("SecondAirportLongitutde",SecondLongitude);
+        intent1.putExtra("SecondAirportLatitude",SecondLatitude);
+        startActivity(intent1);
+    }
+
+    public void getFlightScheduleData()
+    {
+        idlingResource.increment();
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        System.out.println(dateFormat.format(date));
 
         MyServiceHolder myServiceHolder = new MyServiceHolder();
         SharedPreferences settings = getSharedPreferences("PREFS", this.MODE_PRIVATE);
@@ -122,15 +145,15 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
 
                     for(int i = 0; i<size ; i++)
                     {
-                       List<Flight> flightsOne =  flightsList.get(i).getFlights();
-                       flightList.addAll(flightsOne);
+                        List<Flight> flightsOne =  flightsList.get(i).getFlights();
+                        flightList.addAll(flightsOne);
                     }
 
                     flightAdapter.setFlightList(flightList);
                     recyclerView.setAdapter(flightAdapter);
                 }
                 else
-                    {
+                {
 
                     Intent intent1 = new Intent(FlightScheduleActivity.this, NoSchedulesGotten.class);
                     startActivity(intent1);
@@ -143,7 +166,7 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
             @Override
             public void onFailure(Call<ScheduleResource> call, Throwable t)
             {
-               Timber.d("I got nothing people" + t.getMessage());
+                Timber.d("I got nothing people" + t.getMessage());
                 Intent intent1 = new Intent(FlightScheduleActivity.this,NoSchedulesGotten.class);
                 startActivity(intent1);
 
@@ -151,24 +174,5 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
             }
         });
 
-
-    }
-
-    @Override
-    public void onClick(View view, int position)
-    {
-        SharedPreferences sharedPreferences = getSharedPreferences("PREF", Context.MODE_PRIVATE);
-        Float firstLongitude = sharedPreferences.getFloat("FirstAiportLongitude",0);
-        Float firstLatitude = sharedPreferences.getFloat("FirstAirportLatitude",0);
-        Float SecondLongitude = sharedPreferences.getFloat("SecondAiportLongitude",0);
-        Float SecondLatitude = sharedPreferences.getFloat("SecondAirportLatitude",0);
-
-
-        Intent intent1 = new Intent(FlightScheduleActivity.this, MapsActivity.class);
-        intent1.putExtra("FirstAirportLongitude", firstLongitude);
-        intent1.putExtra("FirstAirportLatitude", firstLatitude);
-        intent1.putExtra("SecondAirportLongitutde",SecondLongitude);
-        intent1.putExtra("SecondAirportLatitude",SecondLatitude);
-        startActivity(intent1);
     }
 }

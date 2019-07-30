@@ -45,7 +45,7 @@ public class OpenAirportActivityIntentTest {
     }
 
     @Test
-    public void clickButton_OpensAirportActivity() throws InterruptedException {
+    public void clickButton_OpensAirportActivity(){
 
         onView(withId(R.id.button_mine)).check(matches(isDisplayed()));
 

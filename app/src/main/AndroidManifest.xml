@@ -13,6 +13,9 @@
 
 
     <application
+
+        android:versionCode="1"
+        android:versionName="1.0"
         android:name=".Presenter.TimberClass"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

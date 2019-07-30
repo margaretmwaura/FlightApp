@@ -64,10 +64,41 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         recyclerView.setLayoutManager(linearLayoutManager);
         airportAdapter = new AirportAdapter();
         airportAdapter.setClickListener(this);
-
-
         recyclerView.setAdapter(airportAdapter);
 
+        getAirportData();
+
+    }
+
+    @Override
+    public void onClick(View view, int position)
+    {
+        Airport airport = airPortList.get(position);
+        String airportCode = airport.getAirportCode();
+        Timber.d("This is the airport code of the clicked item " + airportCode);
+
+        flightSceduleCode.add(airport);
+        if(flightSceduleCode.size() == 2)
+        {
+            SharedPreferences sharedPreferences = getSharedPreferences("PREF", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putFloat("FirstAiportLongitude",flightSceduleCode.get(0).getPosition().getCoordinateItems().getLongitude());
+            editor.putFloat("FirstAirportLatitude",flightSceduleCode.get(0).getPosition().getCoordinateItems().getLatitude());
+            editor.putFloat("SecondAiportLongitude",flightSceduleCode.get(1).getPosition().getCoordinateItems().getLongitude());
+            editor.putFloat("SecondAirportLatitude",flightSceduleCode.get(1).getPosition().getCoordinateItems().getLatitude());
+            editor.commit();
+
+          Intent intent = new Intent(AirportActivity.this, FlightScheduleActivity.class);
+          intent.putExtra("FirstAirportCode",flightSceduleCode.get(0).getAirportCode());
+          intent.putExtra("SecondAirportCode", flightSceduleCode.get(1).getAirportCode());
+          startActivity(intent);
+        }
+
+
+    }
+
+    public void getAirportData()
+    {
         idlingResource.increment();
         MyServiceHolder myServiceHolder = new MyServiceHolder();
         SharedPreferences settings = getSharedPreferences("PREFS", this.MODE_PRIVATE);
@@ -75,7 +106,6 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
 
         OkHttpClient okHttpClient = new OkHttpClientInstance.Builder(this,myServiceHolder)
                 .addHeader("Authorization", "Bearer "+token)
-//                .addHeader("X-Originating-IP", "102.167.112.54")
                 .build();
 
 
@@ -117,33 +147,5 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
                     }
                 }
         );
-
-    }
-
-    @Override
-    public void onClick(View view, int position)
-    {
-        Airport airport = airPortList.get(position);
-        String airportCode = airport.getAirportCode();
-        Timber.d("This is the airport code of the clicked item " + airportCode);
-
-        flightSceduleCode.add(airport);
-        if(flightSceduleCode.size() == 2)
-        {
-            SharedPreferences sharedPreferences = getSharedPreferences("PREF", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putFloat("FirstAiportLongitude",flightSceduleCode.get(0).getPosition().getCoordinateItems().getLongitude());
-            editor.putFloat("FirstAirportLatitude",flightSceduleCode.get(0).getPosition().getCoordinateItems().getLatitude());
-            editor.putFloat("SecondAiportLongitude",flightSceduleCode.get(1).getPosition().getCoordinateItems().getLongitude());
-            editor.putFloat("SecondAirportLatitude",flightSceduleCode.get(1).getPosition().getCoordinateItems().getLatitude());
-            editor.commit();
-
-          Intent intent = new Intent(AirportActivity.this, FlightScheduleActivity.class);
-          intent.putExtra("FirstAirportCode",flightSceduleCode.get(0).getAirportCode());
-          intent.putExtra("SecondAirportCode", flightSceduleCode.get(1).getAirportCode());
-          startActivity(intent);
-        }
-
-
     }
 }
