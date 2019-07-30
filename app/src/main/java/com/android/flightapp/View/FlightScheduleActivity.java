@@ -1,5 +1,6 @@
 package com.android.flightapp.View;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
@@ -32,6 +33,7 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
@@ -43,8 +45,10 @@ import timber.log.Timber;
 
 public class FlightScheduleActivity extends AppCompatActivity implements OnItemClickListener {
 
-    Airport firstAirportCode;
-    Airport secondAirportCode;
+    public CountingIdlingResource idlingResource = new CountingIdlingResource("LOADER");
+
+    String firstAirportCode;
+    String secondAirportCode;
     Coordinate coordinateOne;
     CoordinateItems coordinateItemsOne;
     Coordinate coordinateTwo;
@@ -52,6 +56,13 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
     List<Flight> flightList = new ArrayList<>();
     List<Flights> flightsList = new ArrayList<>();
     FlightAdapter flightAdapter;
+
+
+    public  CountingIdlingResource getIdlingResource()
+    {
+        return idlingResource;
+    }
+
 
     @BindView(R.id.flight_recyclerView) RecyclerView recyclerView;
     @Override
@@ -64,6 +75,9 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
         Date date = new Date();
         System.out.println(dateFormat.format(date));
 
+        idlingResource.increment();
+
+
         recyclerView = (RecyclerView) findViewById(R.id.flight_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -71,15 +85,11 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
         flightAdapter.setClickListener(this);
 
         final Intent intent = getIntent();
-        firstAirportCode =intent.getParcelableExtra("FirstAirportCode");
+        firstAirportCode = intent.getStringExtra("FirstAirportCode");
 
-        secondAirportCode = intent.getParcelableExtra("SecondAirportCode");
+        secondAirportCode = intent.getStringExtra("SecondAirportCode");
 
 
-        coordinateOne = firstAirportCode.getPosition();
-        coordinateTwo = secondAirportCode.getPosition();
-        coordinateItemsOne = coordinateOne.getCoordinateItems();
-        coordinateItemsTwo = coordinateTwo.getCoordinateItems();
         MyServiceHolder myServiceHolder = new MyServiceHolder();
         SharedPreferences settings = getSharedPreferences("PREFS", this.MODE_PRIVATE);
         String token = settings.getString("token", null);
@@ -97,7 +107,7 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
                 .client(okHttpClient)
                 .build()
                 .create(api_service.class);
-        Call <ScheduleResource>call = myService.flightSchedules(firstAirportCode.getAirportCode(),secondAirportCode.getAirportCode(),String.valueOf(dateFormat.format(date)));
+        Call <ScheduleResource>call = myService.flightSchedules(firstAirportCode,secondAirportCode,String.valueOf(dateFormat.format(date)));
         call.enqueue(new Callback<ScheduleResource>() {
             @Override
             public void onResponse(Call<ScheduleResource> call, Response<ScheduleResource> response)
@@ -126,6 +136,8 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
                     startActivity(intent1);
                 }
 
+                idlingResource.decrement();
+
             }
 
             @Override
@@ -134,6 +146,8 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
                Timber.d("I got nothing people" + t.getMessage());
                 Intent intent1 = new Intent(FlightScheduleActivity.this,NoSchedulesGotten.class);
                 startActivity(intent1);
+
+                idlingResource.decrement();
             }
         });
 
@@ -143,9 +157,18 @@ public class FlightScheduleActivity extends AppCompatActivity implements OnItemC
     @Override
     public void onClick(View view, int position)
     {
+        SharedPreferences sharedPreferences = getSharedPreferences("PREF", Context.MODE_PRIVATE);
+        Float firstLongitude = sharedPreferences.getFloat("FirstAiportLongitude",0);
+        Float firstLatitude = sharedPreferences.getFloat("FirstAirportLatitude",0);
+        Float SecondLongitude = sharedPreferences.getFloat("SecondAiportLongitude",0);
+        Float SecondLatitude = sharedPreferences.getFloat("SecondAirportLatitude",0);
+
+
         Intent intent1 = new Intent(FlightScheduleActivity.this, MapsActivity.class);
-        intent1.putExtra("FirstAirport", firstAirportCode.getPosition().getCoordinateItems());
-        intent1.putExtra("SecondAirport", secondAirportCode.getPosition().getCoordinateItems());
+        intent1.putExtra("FirstAirportLongitude", firstLongitude);
+        intent1.putExtra("FirstAirportLatitude", firstLatitude);
+        intent1.putExtra("SecondAirportLongitutde",SecondLongitude);
+        intent1.putExtra("SecondAirportLatitude",SecondLatitude);
         startActivity(intent1);
     }
 }

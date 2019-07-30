@@ -1,5 +1,6 @@
 package com.android.flightapp.View;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
@@ -33,13 +35,25 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
+//import androidx.test.espresso.idling.CountingIdlingResource;
 
 public class AirportActivity extends AppCompatActivity implements OnItemClickListener {
+
+
+    public CountingIdlingResource idlingResource = new CountingIdlingResource("LOADER");
+
 
     List<Airport> airPortList = new ArrayList();
     @BindView(R.id.airport_recyclerView)RecyclerView recyclerView;
     AirportAdapter airportAdapter;
     List<Airport> flightSceduleCode = new ArrayList();
+
+    public  CountingIdlingResource getIdlingResource()
+    {
+        return idlingResource;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +65,10 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         airportAdapter = new AirportAdapter();
         airportAdapter.setClickListener(this);
 
+
+        recyclerView.setAdapter(airportAdapter);
+
+        idlingResource.increment();
         MyServiceHolder myServiceHolder = new MyServiceHolder();
         SharedPreferences settings = getSharedPreferences("PREFS", this.MODE_PRIVATE);
         String token = settings.getString("token", null);
@@ -87,7 +105,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
 
                         Coordinate coordinate = airPort.getPosition();
                         float longitutde = coordinate.getCoordinateItems().getLatitude();
-
+                        idlingResource.decrement();
 
                     }
 
@@ -95,6 +113,7 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
                     public void onFailure(Call<AirportResourceModel> call, Throwable t)
                     {
                         Timber.d( "Nothing gotten" + t.getMessage());
+                        idlingResource.decrement();
                     }
                 }
         );
@@ -111,10 +130,20 @@ public class AirportActivity extends AppCompatActivity implements OnItemClickLis
         flightSceduleCode.add(airport);
         if(flightSceduleCode.size() == 2)
         {
+            SharedPreferences sharedPreferences = getSharedPreferences("PREF", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putFloat("FirstAiportLongitude",flightSceduleCode.get(0).getPosition().getCoordinateItems().getLongitude());
+            editor.putFloat("FirstAirportLatitude",flightSceduleCode.get(0).getPosition().getCoordinateItems().getLatitude());
+            editor.putFloat("SecondAiportLongitude",flightSceduleCode.get(1).getPosition().getCoordinateItems().getLongitude());
+            editor.putFloat("SecondAirportLatitude",flightSceduleCode.get(1).getPosition().getCoordinateItems().getLatitude());
+            editor.commit();
+
           Intent intent = new Intent(AirportActivity.this, FlightScheduleActivity.class);
-          intent.putExtra("FirstAirportCode",flightSceduleCode.get(0));
-          intent.putExtra("SecondAirportCode", flightSceduleCode.get(1));
+          intent.putExtra("FirstAirportCode",flightSceduleCode.get(0).getAirportCode());
+          intent.putExtra("SecondAirportCode", flightSceduleCode.get(1).getAirportCode());
           startActivity(intent);
         }
+
+
     }
 }

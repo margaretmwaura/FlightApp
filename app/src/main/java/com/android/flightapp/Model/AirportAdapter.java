@@ -12,6 +12,7 @@ import com.android.flightapp.Presenter.OnItemClickListener;
 import com.android.flightapp.R;
 import com.google.android.gms.common.util.Base64Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -21,7 +22,7 @@ import butterknife.ButterKnife;
 
 public class AirportAdapter extends RecyclerView.Adapter<AirportAdapter.AirportViewHolder>
 {
-    private List<Airport> airportList;
+    private List<Airport> airportList = new ArrayList<>();
     private Context mContext;
     private OnItemClickListener cLickListener;
     @NonNull
